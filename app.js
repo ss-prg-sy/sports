@@ -12,7 +12,7 @@
       id: "stairs",
       name: "階段利用",
       icon: "stairs",
-      cardText: "エレベーターの代わりに、1フロアだけ階段で。",
+      cardText: "いつもの移動で1フロア",
       title: "1フロアだけ階段を使ってみよう！",
       description: "いつもの移動で、エレベーターの代わりに1フロアだけ階段を使ってみよう。",
       steps: [
@@ -27,7 +27,7 @@
       id: "walking",
       name: "ウォーキング",
       icon: "walk",
-      cardText: "授業の合間や空き時間に、3〜5分歩いてみよう。",
+      cardText: "3〜5分だけ歩いてみよう",
       title: "3〜5分、歩いてみよう！",
       description: "授業の合間や空き時間に、大学構内を少し歩いてみよう。",
       steps: [
@@ -42,7 +42,7 @@
       id: "stretch",
       name: "ストレッチ",
       icon: "stretch",
-      cardText: "椅子に座ったまま、上半身をゆっくりほぐそう。",
+      cardText: "座ったまま体をほぐそう",
       title: "座ったまま、体をほぐそう！",
       description: "授業の合間や休憩中に、椅子に座ったままできる簡単なストレッチ。",
       steps: [
@@ -63,8 +63,14 @@
     minutes: [3, 5],
     weightDefault: 60,  // 計算用の仮設定
     weightMin: 40,
-    weightMax: 100
+    weightMax: 100,
+    gummyKcal: 12.0     // グミ1粒（3.5g）あたりのエネルギー（栄養成分表示より）
   };
+
+  /* グミ換算（粒）＝ 推定消費カロリー(kcal) ÷ 12.0 */
+  function gummies(kcalValue) {
+    return kcalValue / CAL.gummyKcal;
+  }
 
   /* 消費カロリー（kcal）＝ METs × 体重(kg) × 時間(分) ÷ 60 × 1.05 */
   function kcal(weight, minutes) {
@@ -101,19 +107,21 @@
   /* ---------- トップ ---------- */
   function renderHome() {
     var cards = MENUS.map(function (m, i) {
-      return '<li><a class="card' + (i === 0 ? " first" : "") + '" href="#/' + m.id + '">' +
+      return '<li><a class="card" href="#/' + m.id + '">' +
         '<span class="ico" aria-hidden="true">' + ICONS[m.icon] + "</span>" +
         '<span><span class="name">' + esc(m.name) + '</span><span class="desc">' + esc(m.cardText) + "</span></span>" +
         ARROW + "</a></li>";
     }).join("");
 
     main.innerHTML =
-      '<section class="hero">' +
+      '<header class="top-head">' +
+        '<p class="eyebrow" lang="en">CAMPUS AOSORA GYM</p>' +
         "<h1>キャンパス青空ジム</h1>" +
-        '<p class="copy">いつもの大学生活に、<br>ちょっとした運動を。</p>' +
-        '<p class="lead">授業の合間や移動のついでに、無理なく体を動かしてみよう！</p>' +
-      "</section>" +
-      '<nav aria-label="運動メニュー"><ul class="cards">' + cards + "</ul></nav>";
+        '<p class="copy">いつもの大学生活に、ちょっとした運動を。</p>' +
+      "</header>" +
+      '<p class="guide">授業の合間や移動のついでに、気軽に体を動かしてみよう！</p>' +
+      '<h2 class="menu-h" id="menuH">今日は何をする？</h2>' +
+      '<nav aria-labelledby="menuH"><ul class="cards">' + cards + "</ul></nav>";
     document.title = "キャンパス青空ジム";
   }
 
@@ -139,39 +147,72 @@
     if (m.calorie) setupCalorie();
   }
 
+  var GUMMY_ICON =
+    '<svg viewBox="0 0 40 40" aria-hidden="true">' +
+      '<rect x="2" y="2" width="36" height="36" rx="12" fill="#EEF7F1"/>' +
+      '<g fill="#8FD0A6" stroke="#2E8B57" stroke-width="1.6" stroke-linejoin="round">' +
+        '<circle cx="14" cy="11" r="3.2"/><circle cx="26" cy="11" r="3.2"/>' +
+        '<circle cx="20" cy="15" r="6.5"/>' +
+        '<path d="M12 22c0-3 3.5-4.5 8-4.5s8 1.5 8 4.5v7c0 3-3.5 5-8 5s-8-2-8-5z"/>' +
+      '</g>' +
+      '<circle cx="17.8" cy="14.2" r="1" fill="#1E5A3C"/><circle cx="22.2" cy="14.2" r="1" fill="#1E5A3C"/>' +
+    '</svg>';
+
   function calorieBlock() {
+    var w = CAL.weightDefault;
     var results = CAL.minutes.map(function (min) {
       return '<div class="result"><dt>' + min + '分間</dt><dd>約<span class="num" id="kcal' + min + '">' +
-        round1(kcal(CAL.weightDefault, min)) + "</span>kcal</dd></div>";
+        round1(kcal(w, min)) + "</span>kcal</dd></div>";
     }).join("");
+    var last = CAL.minutes[CAL.minutes.length - 1];
+    var list = CAL.minutes.map(function (min) {
+      return "<li>" + min + '分：約<span class="num" id="kcalG' + min + '">' + round1(kcal(w, min)) +
+        '</span>kcal（グミ約<span class="num" id="gum' + min + '">' + round1(gummies(kcal(w, min))) + "</span>粒分）</li>";
+    }).join("");
+
     return '<section class="block" aria-labelledby="calH"><h2 id="calH">消費カロリーの目安</h2>' +
       '<div class="calc">' +
-        '<label for="weight"><span>体重</span><span class="weight"><output id="weightOut" for="weight">' +
-          CAL.weightDefault + "</output><small>kg</small></span></label>" +
-        '<p class="tmp">初期値の' + CAL.weightDefault + 'kgは計算用の仮設定です。体重は保存・送信されません。</p>' +
+        '<label for="weight"><span>あなたの体重</span><span class="weight"><output id="weightOut" for="weight">' +
+          w + "</output><small>kg</small></span></label>" +
+        '<p class="tmp">初期値の' + w + 'kgは計算用の仮設定です。体重は保存・送信されません。</p>' +
         '<input type="range" id="weight" min="' + CAL.weightMin + '" max="' + CAL.weightMax + '" step="1" value="' +
-          CAL.weightDefault + '" aria-valuetext="' + CAL.weightDefault + 'キログラム">' +
+          w + '" aria-valuetext="' + w + 'キログラム">' +
         '<div class="scale" aria-hidden="true"><span>' + CAL.weightMin + "kg</span><span>" + CAL.weightMax + "kg</span></div>" +
         '<dl class="results">' + results + "</dl>" +
-        '<p class="note">※普通の速さで歩いた場合の推定値です。安静時の消費を含み、実際の消費量には個人差があります。</p>' +
+        '<div class="gummy">' +
+          '<h3 class="gummy-h">' + GUMMY_ICON + "身近なお菓子でいうと…</h3>" +
+          '<p class="gummy-main">' + last + '分間で、グミ約<span class="num" id="gumMain">' +
+            round1(gummies(kcal(w, last))) + "</span>粒分のエネルギー！</p>" +
+          '<ul class="gummy-list">' + list + "</ul>" +
+        "</div>" +
+        '<ul class="notes">' +
+          "<li>※ピュレグミの栄養成分表示（1粒3.5gあたり12.0kcal）をもとにした参考換算です。商品や内容量によって変わります。</li>" +
+          "<li>※消費カロリーは普通の歩行を想定した推定値であり、安静時の消費を含みます。実際の消費量には個人差があります。</li>" +
+        "</ul>" +
       "</div></section>";
   }
 
   function setupCalorie() {
     var slider = document.getElementById("weight");
     var out = document.getElementById("weightOut");
+    var last = CAL.minutes[CAL.minutes.length - 1];
     var timer = null;
     slider.addEventListener("input", function () {
       var w = parseInt(slider.value, 10);
       out.textContent = w;
       slider.setAttribute("aria-valuetext", w + "キログラム");
       CAL.minutes.forEach(function (min) {
-        document.getElementById("kcal" + min).textContent = round1(kcal(w, min));
+        var k = kcal(w, min);
+        document.getElementById("kcal" + min).textContent = round1(k);
+        document.getElementById("kcalG" + min).textContent = round1(k);
+        document.getElementById("gum" + min).textContent = round1(gummies(k));
       });
+      document.getElementById("gumMain").textContent = round1(gummies(kcal(w, last)));
       clearTimeout(timer);
       timer = setTimeout(function () {
         live.textContent = "体重" + w + "キログラム：" + CAL.minutes.map(function (min) {
-          return min + "分間 約" + round1(kcal(w, min)) + "キロカロリー";
+          var k = kcal(w, min);
+          return min + "分間 約" + round1(k) + "キロカロリー、グミ約" + round1(gummies(k)) + "粒分";
         }).join("、");
       }, 400);
     });
@@ -182,7 +223,7 @@
     var id = location.hash.replace(/^#\/?/, "").split(/[?/]/)[0];
     var m = id ? findMenu(id) : null;
     if (m) renderDetail(m); else renderHome();
-    backBtn.hidden = !m;
+    document.querySelector(".bar").hidden = !m;
     window.scrollTo(0, 0);
     if (moved) main.focus({ preventScroll: true });
     moved = true;
