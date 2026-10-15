@@ -4,18 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>キャンパス青空ジム</title>
-  <meta name="description" content="大学生の日常に運動のきっかけをつくる。授業の合間や移動のついでに、1〜5分の運動を。">
+  <meta name="description" content="いつもの大学生活に、ちょっとした運動を。授業の合間や移動のついでにできる運動を紹介します。">
   <meta name="theme-color" content="#1F8F55">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F8F55'/%3E%3Cpath d='M6 25h6v-6h6v-6h8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
 
-  <header class="bar" >
+  <header class="bar">
     <button class="back" id="backBtn" type="button" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
       戻る
@@ -25,14 +22,8 @@
 
   <main id="main" tabindex="-1"></main>
 
-  <footer class="foot">
-    <p>研究活動の一環として制作した試作サイトです。身体活動を増やす効果はまだ検証されていません。</p>
-    <p><a href="#/about">このサイトについて・プライバシー</a></p>
-  </footer>
+  <div class="sr" aria-live="polite" id="live"></div>
 
-  <div class="live" aria-live="polite" id="live"></div>
-
-  <script src="menus.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
