@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>キャンパス青空ジム</title>
+  <meta name="description" content="大学生の日常に運動のきっかけをつくる。授業の合間や移動のついでに、1〜5分の運動を。">
+  <meta name="theme-color" content="#1F8F55">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+
+  <header class="bar" >
+    <button class="back" id="backBtn" type="button" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      戻る
+    </button>
+    <a class="brand" href="#/">キャンパス青空ジム</a>
+  </header>
+
+  <main id="main" tabindex="-1"></main>
+
+  <footer class="foot">
+    <p>研究活動の一環として制作した試作サイトです。身体活動を増やす効果はまだ検証されていません。</p>
+    <p><a href="#/about">このサイトについて・プライバシー</a></p>
+  </footer>
+
+  <div class="live" aria-live="polite" id="live"></div>
+
+  <script src="menus.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
